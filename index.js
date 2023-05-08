@@ -5,6 +5,7 @@ import dotenv from "dotenv";
 dotenv.config();
 import { client } from "./configs/database.js";
 import apiRoutes from "./routes/apiroutes.js";
+import authRoutes from "./routes/authRoutes.js";
 
 function main() {
   const app = express();
@@ -13,6 +14,7 @@ function main() {
   app.use(cookieParser());
   app.use(express.json());
   app.use("/api/v1/products", apiRoutes);
+  app.use("/api/v1/auth", authRoutes);
   app.get("/", async (req, res) => {
     try {
       await client.connect();

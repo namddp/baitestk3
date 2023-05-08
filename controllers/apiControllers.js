@@ -5,10 +5,17 @@ const apiControllers = {
     try {
       await client.connect();
       const items = await inventories.find().toArray();
-      res.status(200).json({
-        message: " success ",
-        data: items,
-      });
+      if (req.query.quantity === "low") {
+        res.status(200).json({
+          message: " success ",
+          data: items.filter((i) => Number(i.instock) < 100),
+        });
+      } else {
+        res.status(200).json({
+          message: " success ",
+          data: items,
+        });
+      }
     } catch (error) {
       res.status(500).json(error);
     }

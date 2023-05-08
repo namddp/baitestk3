@@ -1,13 +1,37 @@
 import bscypt from "bcrypt";
-import { connectToDb, db } from "../db";
+import { users } from "../configs/database.js";
+import jwt from "jsonwebtoken";
 
 const authControllers = {
-  registerUser: async (req, res) => {
+  loginUser: async (req, res) => {
     try {
-      const salt = await bscypt.genSalt(10);
-      const hashed = await bscypt.hash(req.body.password, salt);
+      const user = await users.findOne({
+        username: req.body.username,
+      });
+
+      if (!user) {
+        res.status(404).json("sai tên đăng nhập");
+      } else if (user) {
+        if (user.password === req.body.password) {
+          const token = jwt.sign(
+            {
+              id: user._id,
+              password: user.password,
+            },
+            "key",
+            {
+              expiresIn: "30000s",
+            }
+          );
+          res.status(200).json({ user, token });
+        } else {
+          res.status(404).json("sai mk");
+        }
+      }
     } catch (error) {
-      res.status(500).json(err);
+      res.status(500).json(error);
     }
   },
 };
+
+export default authControllers;
